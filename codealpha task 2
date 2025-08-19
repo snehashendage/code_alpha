@@ -1,0 +1,35 @@
+pip install yfinance scikit-learn matplotlib
+import yfinance as yf
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+
+# Fetch stock data (example: Apple - AAPL)
+stock = yf.download("AAPL", start="2020-01-01", end="2023-01-01")
+stock["Date"] = stock.index
+
+# Prepare dataset
+stock["Day"] = range(len(stock))
+X = stock[["Day"]]
+y = stock["Close"]
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+
+# Train model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Predictions
+predictions = model.predict(X_test)
+
+# Plot
+plt.figure(figsize=(10,5))
+plt.plot(stock["Date"], y, label="Actual Prices")
+plt.plot(stock["Date"].iloc[len(X_train):], predictions, label="Predicted Prices", color="red")
+plt.xlabel("Date")
+plt.ylabel("Stock Price")
+plt.title("📈 Stock Price Prediction - AAPL")
+plt.legend()
+plt.show()
